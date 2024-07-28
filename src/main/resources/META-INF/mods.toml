@@ -1,0 +1,32 @@
+modLoader="javafml" #mandatory
+loaderVersion="${loader_version_range}" #mandatory This is typically bumped every Minecraft version by Forge. See our download page for lists of versions.
+license="${mod_license}"
+[[mods]] #mandatory
+# The modid of the mod
+modId="entityduplicationmod" #mandatory
+version="1.0" #mandatory
+displayName="EntityDuplicate"
+authors="Yao_jun_S" #optional
+description='''
+The living entity you are looking at will be duplicated in their natural form.
+Every duplicated entity will be glowing for 5 seconds.
+The glowing entity cannot be duplicated.
+You can use commands:
+----/interval       to show the current event testify interval.(tick)
+----/interval x     to set the event testify interval to x ticks.
+----/distance       to show the current distance of duplicating eyes.
+----/distance x     to set the distance of duplicating eyes.
+'''
+[[dependencies.entityduplicationmod]] #optional
+    # the modid of the dependency
+    modId="forge" #mandatory
+    mandatory=true #mandatory
+    versionRange="${forge_version_range}" #mandatory
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.entityduplicationmod]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="BOTH"
