@@ -13,7 +13,12 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class RayTraceUtils {
-
+/**
+ * 实现功能：获取在玩家视线向量上的、距离distance内的、不被方块遮挡的最近的实体。
+ * @param distance ：限定距离。可被指令更改。
+ * @param player ：服务器端的玩家对象。
+ * @return ：最近实体，可能是null
+ * */
     public static EntityHitResult getEntityLookingAt(ServerPlayer player, double distance) {
         Vec3 startVec = player.getEyePosition(1.0F);
         Vec3 lookVec = player.getViewVector(1.0F);

@@ -16,32 +16,60 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 @Mod.EventBusSubscriber(modid = EntityDuplicate.mod_id,bus=Mod.EventBusSubscriber.Bus.FORGE)
 public class ModEvents {
-    static ArrayList<ServerPlayer> players = new ArrayList<>();
-    static int interval = 10;
 
-    static int c = 0;
+    static Set<ServerPlayer> players = new HashSet<>();
+    static HashMap<ServerPlayer, Integer> playerCounters = new HashMap<>();
+    static int interval = 10;
     static int distance = 12;
+
     @SubscribeEvent
-    public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent e){
-        if(e.getEntity() instanceof ServerPlayer p){
+    public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent e) {
+        if (e.getEntity() instanceof ServerPlayer p) {
             players.add(p);
+            playerCounters.put(p, 0);
         }
     }
+
+    @SubscribeEvent
+    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent e) {
+        if (e.getEntity() instanceof ServerPlayer p) {
+            players.removeIf(player -> player.getUUID().equals(p.getUUID()));
+            players.add(p);
+            playerCounters.put(p, 0);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent e) {
+        if (e.getEntity() instanceof ServerPlayer p) {
+            players.removeIf(player -> player.getUUID().equals(p.getUUID()));
+            playerCounters.remove(p);
+        }
+    }
+
     @SubscribeEvent
     public static void onTick(TickEvent.LevelTickEvent event) {
-        if (event.phase == TickEvent.Phase.START
-                && !event.level.isClientSide
-                && players.size()!=0) {
-            c++;
-            if(c>=interval){
-                players.forEach(e->EntityUtils.copyTargetedEntity(e,distance));
-                c=0;
+        if (event.phase == TickEvent.Phase.START && !event.level.isClientSide && !players.isEmpty()) {
+            players.removeIf(p -> p.isRemoved() || !p.isAlive());
+
+            for (ServerPlayer player : players) {
+                int c = playerCounters.get(player);
+                c++;
+                if (c >= interval) {
+                    EntityUtils.copyTargetedEntity(player, distance);
+                    c = 0;
+                }
+                playerCounters.put(player, c);
             }
         }
     }
+
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
