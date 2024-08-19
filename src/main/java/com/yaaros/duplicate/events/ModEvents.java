@@ -15,27 +15,29 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.ArrayList;
+
 @Mod.EventBusSubscriber(modid = EntityDuplicate.mod_id,bus=Mod.EventBusSubscriber.Bus.FORGE)
 public class ModEvents {
-    static ServerPlayer p;
+    static ArrayList<ServerPlayer> players = new ArrayList<>();
     static int interval = 10;
 
     static int c = 0;
     static int distance = 12;
     @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent e){
-        if(e.getEntity() instanceof ServerPlayer){
-            p = (ServerPlayer) e.getEntity();
+        if(e.getEntity() instanceof ServerPlayer p){
+            players.add(p);
         }
     }
     @SubscribeEvent
     public static void onTick(TickEvent.LevelTickEvent event) {
         if (event.phase == TickEvent.Phase.START
                 && !event.level.isClientSide
-                && p!=null) {
+                && players.size()!=0) {
             c++;
             if(c>=interval){
-                EntityUtils.copyTargetedEntity(p,distance);
+                players.forEach(e->EntityUtils.copyTargetedEntity(e,distance));
                 c=0;
             }
         }

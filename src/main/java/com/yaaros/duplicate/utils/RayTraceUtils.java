@@ -1,12 +1,13 @@
 package com.yaaros.duplicate.utils;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.*;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -20,7 +21,9 @@ public class RayTraceUtils {
         AABB aabb = new AABB(startVec, endVec);
 
         List<Entity> entities = player.level().getEntities(player, aabb, entity -> !entity.isSpectator() && entity.isPickable());
-        double closestDistance = distance;
+        BlockHitResult blockHitResult = player.level().clip(new ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
+        double closestDistance = blockHitResult.getType() != HitResult.Type.MISS ? blockHitResult.getLocation().distanceTo(startVec) : distance;
+
         EntityHitResult closestEntityResult = null;
 
         for (Entity entity : entities) {
@@ -36,7 +39,6 @@ public class RayTraceUtils {
                 }
             }
         }
-
         return closestEntityResult;
     }
 
