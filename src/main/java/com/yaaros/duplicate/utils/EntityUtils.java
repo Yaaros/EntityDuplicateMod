@@ -42,7 +42,8 @@ public class EntityUtils {
                                     newEntity.setItemSlot(slot, stack.copy());
                                 }
                             }
-                            copyBabyStatus(targetLivingEntity,newEntity);
+                            copyBabyStatus(targetLivingEntity,newEntity);//isBaby
+                            newEntity.setHealth(targetLivingEntity.getHealth());//HP
                             // 处理羊的颜色
                             if (targetLivingEntity instanceof Sheep) {
                                 DyeColor woolColor = ((Sheep) targetLivingEntity).getColor();
